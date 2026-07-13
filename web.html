@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ba Na SmartLink - Nền tảng AI kết nối dữ liệu Thôn - Xã</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Quicksand:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #8b5cf6;
+            --primary-dark: #3730a3;
+            --primary-bg-light: #e0e7ff;
+            --accent: #f59e0b;
+            --text-main: #0f172a;
+            --bg-light: #f6f7fb;
+            --muted: #64748b;
+            --line: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            color: var(--text-main);
+            background-color: var(--bg-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        /* --- NAVIGATION --- */
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+            padding: 4px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .navbar-nav {
+            width: 100%;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .nav-link-custom {
+            font-family: 'Baloo 2', sans-serif;
+            font-weight: 700;
+            color: #475569 !important;
+            padding: 12px 24px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            text-transform: uppercase;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        .nav-link-custom::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 24px;
+            right: 24px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 2px;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .nav-link-custom:hover {
+            color: var(--primary) !important;
+        }
+
+        .nav-link-custom:hover::after, 
+        .nav-link-custom.active::after {
+            transform: scaleX(1);
+        }
+
+        .nav-link-custom.active {
+            color: var(--primary) !important;
+            background-color: rgba(79, 70, 229, 0.06);
+        }
+
+        .dropdown-menu-custom {
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(15px);
+            animation: dropdownFade 0.3s ease;
+        }
+
+        @keyframes dropdownFade {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item-custom {
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+            padding: 10px 18px;
+            color: #334155;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .dropdown-item-custom:hover {
+            background-color: var(--primary-bg-light);
+            color: var(--primary-dark);
+            padding-left: 22px;
+        }
+
+        /* --- SLIDESHOW (HERO) --- */
+        .hero-slider {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            overflow: hidden;
+            box-shadow: inset 0 -40px 80px rgba(0,0,0,0.2);
+            background-color: #000;
+        }
+
+        .slide-item {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1.2s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide-item.active {
+            opacity: 1;
+        }
+
+        .slide-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            padding: 30px 20px;
+            color: white;
+            text-align: center;
+        }
+
+        /* --- DYNAMIC CONTENT SYSTEM --- */
+        main {
+            flex: 1;
+            padding: 30px 15px;
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .view-panel {
+            display: none;
+        }
+
+        .view-panel.active-panel {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        /* --- CARDS & WIDGETS --- */
+        .news-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--line);
+            padding: 20px;
+            height: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .news-card:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.08);
+            border-color: var(--primary-light);
+        }
+        .news-badge {
+            font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 6px;
+            margin-bottom: 12px; display: inline-block;
+        }
+
+        /* --- SYSTEM EMBED VIEW (IFRAME) --- */
+        .iframe-container {
+            width: 100%;
+            height: 82vh;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .iframe-view {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* --- LOGIN WRAPPER FOR SUB-LINKS --- */
+        .login-card-holder {
+            max-width: 450px;
+            margin: 50px auto;
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 50px rgba(15,23,42,.08);
+            border: 1px solid var(--line);
+        }
+
+        /* --- CẤU TRÚC Ô NHẬP MẬT KHẨU CÓ MẮT --- */
+        .password-container {
+            position: relative;
+        }
+        .password-container .form-control {
+            padding-right: 45px;
+        }
+        .toggle-password-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        .toggle-password-btn:hover {
+            color: var(--primary);
+        }
+
+        /* --- CONTACT FORM STYLE --- */
+        .contact-card-holder {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 24px;
+            padding: 45px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06);
+            border: 1px solid var(--line);
+        }
+        .contact-card-holder .form-label {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 10px;
+            font-size: 14.5px;
+        }
+        .contact-card-holder .form-control {
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 13px 20px;
+            font-size: 15px;
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            background-color: #fff;
+        }
+        .contact-card-holder .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        .contact-card-holder .form-control::placeholder {
+            color: #94a3b8;
+        }
+        .btn-submit-contact {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s ease;
+        }
+        .btn-submit-contact:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(79, 70, 229, 0.4);
+            color: white;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #e2e8f0;
+            padding: 40px 20px 20px;
+            font-size: 14px;
+            margin-top: auto;
+            border-top: 4px solid var(--primary-light);
+        }
+
+        footer h5 {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        footer .footer-brand {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        footer hr {
+            border-color: rgba(255,255,255,0.1);
+            margin: 25px 0;
+        }
+
+        /* --- FLOATING AI CHATBOT SYSTEM --- */
+        .ai-chat-btn {
+            position: fixed;
+            right: 25px; bottom: 25px;
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; border: none;
+            box-shadow: 0 8px 25px rgba(79,70,229,0.4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; z-index: 1000;
+            cursor: pointer; transition: transform 0.2s;
+        }
+        .ai-chat-btn:hover { transform: scale(1.08); }
+
+        .ai-window {
+            position: fixed;
+            right: 25px; bottom: 95px;
+            width: 320px; max-width: 90vw;
+            height: 450px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border: 1px solid var(--line);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .ai-window-header {
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            color: white; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .ai-messages {
+            flex: 1; overflow-y: auto; padding: 15px;
+            background-color: #f8fafc; display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .msg { max-width: 80%; padding: 10px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.5; }
+        .msg.bot { background: white; border: 1px solid var(--line); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .msg.user { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+
+        .ai-input-area {
+            padding: 12px; border-top: 1px solid var(--line);
+            display: flex; gap: 8px; align-items: center; background: white;
+        }
+        .ai-input-area input {
+            flex: 1; border: 1px solid #cbd5e1; padding: 8px 16px;
+            border-radius: 20px; outline: none; font-size: 14px;
+        }
+        .ai-input-area input:focus {
+            border-color: var(--primary);
+        }
+        .ai-icon-btn {
+            background: #f1f5f9; border: none; width: 36px; height: 36px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: var(--muted); cursor: pointer; transition: all 0.2s;
+        }
+        .ai-icon-btn:hover { background: #e2e8f0; color: var(--primary); }
+        .ai-icon-btn.active-mic { color: #ef4444; animation: pulse 1s infinite; }
+
+        /* Bootstrap class dynamic overrides */
+        .text-primary { color: var(--primary) !important; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important; border: none !important; box-shadow: 0 14px 30px rgba(99,102,241,.32); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 38px rgba(99,102,241,.42); }
+        .table-primary { background-color: var(--primary) !important; }
+        .table-primary th { background: linear-gradient(135deg, var(--primary), var(--primary-light)) !important; color: #fff !important; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* --- RESPONSIVE ADJUSTMENTS --- */
+        @media (max-width: 768px) {
+            .hero-slider { height: 240px; }
+            header h1 { font-size: 18px; }
+            .nav-link-custom { padding: 8px 10px !important; font-size: 13px; }
+            .nav-link-custom::after { left: 10px; right: 10px; bottom: 2px; }
+            .login-card-holder, .contact-card-holder { padding: 25px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="mainProjectTitle">Ba Na SmartLink – Nền tảng AI kết nối dữ liệu Thôn - Xã thông minh</h1>
+    </header>
+
+    <nav class="navbar navbar-expand-md navbar-custom">
+        <div class="container-fluid p-0">
+            <button class="navbar-toggler m-2" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link-custom active" onclick="navigateView('trangchu')">Trang Chủ</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link-custom dropdown-toggle" id="menuGioiThieu" data-bs-toggle="dropdown" aria-expanded="false">Giới Thiệu</a>
+                        <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="menuGioiThieu">
+                            <li><a class="dropdown-item dropdown-item-custom" onclick="navigateView('tongquan')">Tổng quan Bà Nà</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" onclick="navigateView('lanhdao')">Thông tin lãnh đạo</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link-custom" onclick="navigateView('congdan')">Công Dân</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link-custom dropdown-toggle" id="menuCanBo" data-bs-toggle="dropdown" aria-expanded="false">Cán Bộ</a>
+                        <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="menuCanBo">
+                            <li><a class="dropdown-item dropdown-item-custom" onclick="navigateView('canbothon')">Cán bộ Thôn</a></li>
+                            <li><a class="dropdown-item dropdown-item-custom" onclick="navigateView('canboxa')">Cán bộ Xã</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link-custom" onclick="navigateView('lienhe')">Liên Hệ</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="hero-slider" id="homeSlideshow">
+        <div class="slide-item active" style="background-image: url('xa-ba-na.jpg');">
+            <div class="slide-overlay">
+                <h3>Bản đồ Địa bàn Hành chính Xã Bà Nà</h3>
+                <p>Nền tảng số hóa kết nối trực tuyến toàn bộ dữ liệu 10 thôn trực thuộc</p>
+            </div>
+        </div>
+        <div class="slide-item" style="background-image: url('sun-world.jpg');">
+            <div class="slide-overlay">
+                <h3>Khu du lịch Sun World Ba Na Hills</h3>
+                <p>Biểu tượng du lịch quốc tế, động lực phát triển kinh tế số địa phương</p>
+            </div>
+        </div>
+        <div class="slide-item" style="background-image: url('cau-vang.jpg');">
+            <div class="slide-overlay">
+                <h3>Kiến trúc Danh thắng Cầu Vàng</h3>
+                <p>Kết nối giá trị truyền thống và công nghệ tương lai thông minh</p>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        
+        <div id="panel_trangchu" class="view-panel active-panel">
+            <h4 class="fw-bold mb-4 text-primary"><i class="fa-solid fa-square-rss me-2"></i>Bảng Tin Thông Báo, Tin Tức & Sự Kiện</h4>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="news-card" onclick="openNewsModal(1)">
+                        <span class="news-badge bg-danger text-white">Thông báo khẩn</span>
+                        <h5>Triển khai Kê khai Dữ liệu Dân cư thông minh toàn xã Quý II/2026</h5>
+                        <p class="text-muted small">Yêu cầu toàn bộ công dân thực hiện kê khai chính xác 14 tiêu chí để phục vụ đồng bộ dữ liệu.</p>
+                        <hr><small class="text-secondary"><i class="fa-regular fa-clock me-1"></i>Vừa xong</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="news-card" onclick="openNewsModal(2)">
+                        <span class="news-badge bg-warning text-dark">Sự kiện</span>
+                        <h5>Hội nghị Tập huấn Chuyển đổi số cho Đội ngũ Cán bộ Thôn</h5>
+                        <p class="text-muted small">Hướng dẫn sử dụng công cụ AI trợ lý, tóm tắt và phê duyệt số liệu Grid trực tiếp trên hệ thống mới.</p>
+                        <hr><small class="text-secondary"><i class="fa-regular fa-clock me-1"></i>Hôm qua</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="news-card" onclick="openNewsModal(3)">
+                        <span class="news-badge bg-success text-white">Tin tức</span>
+                        <h5>Xã Bà Nà đạt danh hiệu dẫn đầu chỉ số cải cách hành chính số</h5>
+                        <p class="text-muted small">Nhờ ứng dụng công nghệ kết nối trực tuyến dữ liệu thông minh, thời gian xử lý hồ sơ giảm tới 70%.</p>
+                        <hr><small class="text-secondary"><i class="fa-regular fa-clock me-1"></i>2 ngày trước</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="panel_tongquan" class="view-panel">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+                <h4 class="fw-bold text-primary mb-3"><i class="fa-solid fa-map-location-dot me-2"></i>Tổng Quan Vị Trí Địa Lý & Quy Mô</h4>
+                <div class="row">
+                    <div class="col-lg-7">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item py-3"><strong>Nguồn gốc thành lập:</strong> Xã Bà Nà được thành lập từ việc sắp xếp toàn bộ diện tích tự nhiên, quy mô dân số của các xã Hòa Ninh và Hòa Nhơn.</li>
+                            <li class="list-group-item py-3"><strong>Đơn vị hành hành chính trực thuộc:</strong> 10 thôn</li>
+                            <li class="list-group-item py-3"><strong>Quy mô dân số địa bàn:</strong> Khoảng 25.000 người</li>
+                            <li class="list-group-item py-3"><strong>Phạm vi nghiên cứu lập kiểm kê:</strong> Toàn xã Bà Nà với diện tích đất tự nhiên là 136,41 km²</li>
+                        </ul>
+                        <div class="mt-4 p-3 bg-light rounded-3 border-start border-primary border-4">
+                            <h5><strong>Ranh giới tứ cận địa lý:</strong></h5>
+                            <p class="mb-1"><strong>+ Phía Bắc:</strong> Giáp phường Hải Vân, phường Liên Chiểu, phường Hòa Khánh.</p>
+                            <p class="mb-1"><strong>+ Phía Nam:</strong> Giáp xã Hòa Vang.</p>
+                            <p class="mb-1"><strong>+ Phía Đông:</strong> Giáp phường An Khê và phường Cẩm Lệ.</p>
+                            <p class="mb-1"><strong>+ Phía Tây:</strong> Giáp xã Sông Vàng.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 text-center mt-3 mt-lg-0">
+                        <img src="xa-ba-na.jpg" alt="Bản đồ Bà Nà" class="img-fluid rounded-4 shadow-sm border" style="max-height: 380px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="panel_lanhdao" class="view-panel">
+            <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+                <h4 class="fw-bold text-primary mb-3"><i class="fa-solid fa-users-gear me-2"></i>Thông Tin Đội Ngũ Ban Lãnh Đạo Xã</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle text-center small">
+                        <thead class="table-primary text-white">
+                            <tr>
+                                <th>STT</th>
+                                <th>HỌ VÀ TÊN</th>
+                                <th>CHỨC VỤ</th>
+                                <th>SỐ ĐIỆN THOẠI</th>
+                                <th>MAIL CÔNG VỤ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1</td><td class="fw-bold">Phan Văn Tôn</td><td>Bí thư Đảng ủy</td><td>0905144677</td><td>tonnv@danang.gov.vn</td></tr>
+                            <tr><td>2</td><td class="fw-bold">Bùi Nam Dũng</td><td>Phó Bí thư TT Đảng ủy</td><td>0905710666</td><td>dungbn@danang.gov.vn</td></tr>
+                            <tr><td>3</td><td class="fw-bold">Lê Minh Tuấn</td><td>Chủ tịch UBND</td><td>0946000234</td><td>tuanlm5@danang.gov.vn</td></tr>
+                            <tr><td>4</td><td class="fw-bold">Nguyễn Tấn Phát</td><td>Phó Chủ tịch UBND</td><td>0799411379</td><td>phatnt@danang.gov.vn</td></tr>
+                            <tr><td>5</td><td class="fw-bold">Lê Đức Trí</td><td>Phó Chủ tịch UBND</td><td>0903572637</td><td>trild@danang.gov.vn</td></tr>
+                            <tr><td>6</td><td class="fw-bold">Nguyễn Văn Bửu</td><td>Chánh Văn phòng UBND</td><td>0905999379</td><td>buunv@danang.gov.vn</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="panel_congdan" class="view-panel">
+            <div class="iframe-container">
+                <iframe src="congdan.html" class="iframe-view"></iframe>
+            </div>
+        </div>
+
+        <div id="panel_canbothon" class="view-panel">
+            <div class="login-card-holder">
+                <div class="text-center mb-4">
+                    <div class="bg-primary text-white d-inline-flex p-3 rounded-circle mb-2"><i class="fa-solid fa-house-user fa-2x"></i></div>
+                    <h4 class="fw-bold">Cán Bộ Thôn Đăng Nhập</h4>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-secondary">Mã số tài khoản</label>
+                    <input type="text" id="thonUser" class="form-control" placeholder="Nhập mã số tài khoản">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-secondary">Mật khẩu</label>
+                    <div class="password-container">
+                        <input type="password" id="thonPass" class="form-control" placeholder="Nhập mật khẩu">
+                        <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('thonPass', this)">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 fw-bold py-2 mb-2" onclick="processMockLogin('thon')">Đăng Nhập Ngay</button>
+            </div>
+        </div>
+
+        <div id="panel_canboxa" class="view-panel">
+            <div class="login-card-holder">
+                <div class="text-center mb-4">
+                    <div class="bg-primary text-white d-inline-flex p-3 rounded-circle mb-2"><i class="fa-solid fa-building-columns fa-2x"></i></div>
+                    <h4 class="fw-bold">Cán Bộ Xã Đăng Nhập</h4>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-secondary">Mã số tài khoản</label>
+                    <input type="text" id="xaUser" class="form-control" placeholder="Nhập mã số tài khoản">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-secondary">Mật khẩu</label>
+                    <div class="password-container">
+                        <input type="password" id="xaPass" class="form-control" placeholder="Nhập mật khẩu">
+                        <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('xaPass', this)">
+                            <i class="fa-regular fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn btn-primary w-100 fw-bold py-2 mb-2" onclick="processMockLogin('xa')">Đăng Nhập Ngay</button>
+            </div>
+        </div>
+
+        <div id="panel_lienhe" class="view-panel">
+            <div class="contact-card-holder">
+                <form id="contactFormSystem" onsubmit="event.preventDefault(); submitContactForm();">
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label" for="contactName">Họ và tên</label>
+                            <input type="text" id="contactName" class="form-control" placeholder="Nhập họ và tên" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="contactPhone">Số điện thoại</label>
+                            <input type="tel" id="contactPhone" class="form-control" placeholder="Nhập số điện thoại" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" for="contactEmail">Email</label>
+                        <input type="email" id="contactEmail" class="form-control" placeholder="Nhập địa chỉ email">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label" for="contactContent">Nội dung</label>
+                        <textarea id="contactContent" class="form-control" rows="5" placeholder="Nhập nội dung liên hệ, góp ý hoặc phản ánh..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-submit-contact">
+                        <i class="fa-solid fa-paper-plane"></i> Gửi liên hệ
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="modal fade" id="newsDetailModal" tabindex="-1" aria-labelledby="newsDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow" style="border-radius: 20px; overflow: hidden;">
+                <div class="modal-header text-white" id="modalHeaderBg" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-bottom: none;">
+                    <div class="d-flex flex-column">
+                        <span class="badge mb-2 align-self-start" id="modalArticleBadge" style="font-size: 11px; padding: 5px 10px;"></span>
+                        <h5 class="modal-title fw-bold" id="modalArticleTitle" style="font-size: 18px; line-height: 1.4;">Tiêu đề bài viết</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white align-self-start" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 bg-white" style="font-size: 15px; line-height: 1.7; color: #334155;">
+                    <div class="d-flex align-items-center text-muted small mb-3 border-bottom pb-2">
+                        <span class="me-3"><i class="fa-regular fa-calendar me-1"></i> Ngày đăng: <span id="modalArticleDate">12/07/2026</span></span>
+                        <span><i class="fa-regular fa-user me-1"></i> Tác giả: Ban Biên Tập Ban Link</span>
+                    </div>
+                    <div id="modalArticleContent" style="white-space: pre-line;">
+                        Nội dung bài viết chi tiết...
+                    </div>
+                </div>
+                <div class="modal-footer bg-light border-top-0">
+                    <button type="button" class="btn btn-secondary fw-bold px-4 py-2" data-bs-dismiss="modal" style="border-radius: 10px; font-size: 14px;">Đóng lại</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container-fluid">
+            <div class="row g-4 justify-content-between">
+                <div class="col-md-7">
+                    <div class="footer-brand mb-2">
+                        <i class="fa-solid fa-circle-nodes text-warning"></i> Ba Na SmartLink
+                    </div>
+                    <p class="m-0 text-light opacity-75">Nền tảng AI kết nối dữ liệu Thôn – Xã thông minh, đồng hành cùng chính quyền và người dân xã Bà Nà trong công cuộc chuyển đổi số toàn diện.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>ĐƠN VỊ CHỦ QUẢN</h5>
+                    <p class="mb-1 text-white"><i class="fa-solid fa-user-tie text-warning me-2"></i>Lê Minh Tuấn – Chủ tịch UBND xã Bà Nà</p>
+                    <p class="m-0"><i class="fa-solid fa-location-dot text-warning me-2"></i>Địa chỉ: Thôn Thạch Nham Tây, xã Bà Nà, thành phố Đà Nẵng</p>
+                </div>
+            </div>
+            <hr>
+            <div class="text-center small opacity-50">
+                © 2026 Ba Na SmartLink – Nền tảng AI kết nối dữ liệu Thôn – Xã thông minh. Bản quyền thuộc UBND xã Bà Nà.
+            </div>
+        </div>
+    </footer>
+
+    <button class="ai-chat-btn" onclick="toggleAiChatWindow()" title="Trợ lý AI SmartLink"><i class="fa-solid fa-robot"></i></button>
+    <div class="ai-window" id="aiWindowSystem">
+        <div class="ai-window-header">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-robot text-warning fs-5"></i>
+                <div>
+                    <strong class="d-block" style="font-size:14px;">Trợ lý AI Ba Na SmartLink</strong>
+                </div>
+            </div>
+            <button class="btn-close btn-close-white" style="font-size:12px;" onclick="toggleAiChatWindow()"></button>
+        </div>
+        
+        <div class="ai-messages" id="aiMessageContainer">
+            <div class="msg bot">Chào bạn! Tôi là trợ lý AI tích hợp của hệ thống Ba Na SmartLink. Bạn có thể nhập yêu cầu, tải tệp biểu mẫu, gửi hình ảnh minh chứng hoặc click nút Micro bên dưới để nhập liệu bằng giọng nói nhé! 🤖</div>
+        </div>
+
+        <div class="ai-input-area">
+            <button class="ai-icon-btn" title="Tải file/Ảnh minh chứng" onclick="document.getElementById('aiSystemFile').click()"><i class="fa-solid fa-paperclip"></i></button>
+            <input type="file" id="aiSystemFile" style="display:none;" onchange="handleAiFileUpload(event)">
+            
+            <input type="text" id="aiSystemTextInput" placeholder="Hỏi AI hoặc yêu cầu soạn văn bản..." onkeydown="if(event.key==='Enter') sendAiMessageSystem()">
+            
+            <button class="ai-icon-btn" id="aiVoiceMicBtn" title="Ghi âm giọng nói đầu vào" onclick="activateVoiceRecognitionAI()"><i class="fa-solid fa-microphone"></i></button>
+            
+            <button class="ai-icon-btn text-primary" title="Gửi" onclick="sendAiMessageSystem()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // --- LOGIC ĐIỀU HƯỚNG SPA & ANH ĐỘNG ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide-item');
+
+        function startSlideshowSystem() {
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, 4000); // 4 giây đổi hình ảnh 1 lần
+        }
+
+        function navigateView(viewName) {
+            document.querySelectorAll('.nav-link-custom').forEach(link => link.classList.remove('active'));
+            
+            if(viewName === 'tongquan' || viewName === 'lanhdao') {
+                document.getElementById('menuGioiThieu').classList.add('active');
+            } else if(viewName === 'canbothon' || viewName === 'canboxa') {
+                document.getElementById('menuCanBo').classList.add('active');
+            } else {
+                if(event && event.currentTarget) {
+                    event.currentTarget.classList.add('active');
+                }
+            }
+            
+            const slideshow = document.getElementById('homeSlideshow');
+            if(viewName === 'trangchu') {
+                slideshow.style.display = 'block';
+                if(document.querySelector('.nav-link-custom')) {
+                    document.querySelector('.nav-link-custom').classList.add('active');
+                }
+            } else {
+                slideshow.style.display = 'none';
+            }
+
+            document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active-panel'));
+            const targetPanel = document.getElementById('panel_' + viewName);
+            if(targetPanel) targetPanel.classList.add('active-panel');
+        }
+
+        // Cơ sở dữ liệu nội dung bài viết chi tiết ở Trang Chủ
+        const newsDatabase = {
+            1: {
+                title: "Triển khai Kê khai Dữ liệu Dân cư thông minh toàn xã Quý II/2026",
+                badge: "Thông báo khẩn",
+                badgeClass: "bg-danger",
+                date: "12/07/2026",
+                content: "Nhằm thực hiện kế hoạch số hóa và đồng bộ cơ sở dữ liệu quốc gia về dân cư, UBND xã Bà Nà chính thức phát động chiến dịch kê khai thông tin trực tuyến toàn diện trong Quý II/2026.\n\nYêu cầu toàn bộ công dân có hộ khẩu thường trú và tạm trú trên địa bàn tiến hành rà soát, kê khai chính xác 14 tiêu chí cơ bản (bao gồm thông tin cư trú, nghề nghiệp, trình độ văn hóa, mã số định danh...). \n\nThời gian thực hiện bắt đầu từ ngày hôm nay đến hết ngày 30/08/2026. Các tổ công nghệ số cộng đồng tại 10 thôn trực thuộc sẽ trực tiếp đến từng hộ gia đình để hướng dẫn và hỗ trợ người dân thao tác trên hệ thống Ba Na SmartLink."
+            },
+            2: {
+                title: "Hội nghị Tập huấn Chuyển đổi số cho Đội ngũ Cán bộ Thôn",
+                badge: "Sự kiện",
+                badgeClass: "bg-warning text-dark",
+                date: "11/07/2026",
+                content: "Sáng ngày hôm qua, tại Hội trường UBND xã Bà Nà, Ban chỉ đạo Chuyển đổi số phối hợp cùng các chuyên gia công nghệ đã tổ chức thành công lớp tập huấn kỹ năng số cho hơn 50 cán bộ chủ chốt của 10 thôn.\n\nNội dung tập huấn tập trung vào việc làm quen và làm chủ giao diện quản trị Grid mới của hệ thống Ba Na SmartLink, sử dụng Trợ lý AI Địa bàn để tự động tóm tắt văn bản báo cáo, kiểm tra tính logic của số liệu kê khai dân cư từ người dân gửi lên trước khi phê duyệt chuyển tiếp lên cấp Xã.\n\nPhát biểu chỉ đạo tại Hội nghị, Chủ tịch UBND xã nhấn mạnh đây là bước đi then chốt nhằm giảm tải thủ tục giấy tờ hành chính và nâng cao hiệu suất quản trị công từ cấp cơ sở."
+            },
+            3: {
+                title: "Xã Bà Nà đạt danh hiệu dẫn đầu chỉ số cải cách hành chính số",
+                badge: "Tin tức",
+                badgeClass: "bg-success",
+                date: "10/07/2026",
+                content: "Thành phố Đà Nẵng vừa công bố bảng xếp hạng chỉ số cải cách hành chính (PAR INDEX) khối xã, phường năm vừa qua. Theo đó, xã Bà Nà đã xuất sắc vươn lên vị trí dẫn đầu toàn khối.\n\nThành tích vượt bậc này có sự đóng góp rất lớn từ việc đưa nền tảng Ba Na SmartLink vào vận hành thực tế. Với cơ chế kết nối trực tuyến thông minh dữ liệu liên thông giữa Thôn và Xã, thời gian tiếp nhận, phân loại và xử lý hồ sơ hành chính, phản ánh kiến nghị của người dân đã được rút ngắn đến hơn 70% so với phương thức truyền thống.\n\nTrong thời gian tới, UBND xã quyết tâm cải tiến thêm các phân hệ dữ liệu nhằm giữ vững danh hiệu và phục vụ nhân dân ngày một tốt hơn."
+            }
+        };
+
+        // Biến toàn cục để lưu trữ thực thể Modal Bootstrap
+        let currentNewsModalInstance = null;
+
+        // Hàm xử lý mở hộp thoại hiển thị nguyên bài viết
+        function openNewsModal(newsId) {
+            const article = newsDatabase[newsId];
+            if (!article) return;
+
+            document.getElementById('modalArticleTitle').innerText = article.title;
+            document.getElementById('modalArticleContent').innerText = article.content;
+            document.getElementById('modalArticleDate').innerText = article.date;
+            
+            const badgeElement = document.getElementById('modalArticleBadge');
+            badgeElement.innerText = article.badge;
+            badgeElement.className = `badge mb-2 align-self-start ${article.badgeClass}`;
+
+            // Khởi tạo hoặc tái sử dụng thực thể Modal Bootstrap chuẩn xác
+            currentNewsModalInstance = new bootstrap.Modal(document.getElementById('newsDetailModal'));
+            currentNewsModalInstance.show();
+        }
+
+        // Xử lý ẩn/hiện mật khẩu
+        function togglePasswordVisibility(inputId, btn) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fa-regular fa-eye'; // Cho xem mật khẩu
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'fa-regular fa-eye-slash'; // Ẩn mật khẩu
+            }
+        }
+
+        // Xử lý gửi Form liên hệ
+        function submitContactForm() {
+            const name = document.getElementById('contactName').value.trim();
+            const phone = document.getElementById('contactPhone').value.trim();
+            
+            alert(`Cảm ơn ${name}! Ý kiến phản ánh/góp ý của anh/chị đã được ghi nhận trực tuyến thành công. UBND xã Bà Nà sẽ phản hồi sớm nhất qua số điện thoại: ${phone}.`);
+            
+            document.getElementById('contactFormSystem').reset();
+        }
+
+        function processMockLogin(type) {
+            if (type === 'thon') {
+                const user = document.getElementById('thonUser').value.trim();
+                const pass = document.getElementById('thonPass').value.trim();
+
+                if ((user === '1029384001' || user === '1029384002') && pass === '12345@') {
+                    alert("Hệ thống xác thực thành công tài khoản Cán bộ Thôn. Chuyển hướng đến bảng điều khiển quản trị!");
+                    window.location.href = 'thon.html';
+                } else {
+                    const userNum = Number(user);
+                    if (userNum >= 1029384003 && userNum <= 1029384020 && pass === '12345@') {
+                        alert("Đăng nhập thành công!");
+                    } else {
+                        alert("Sai mã số hoặc mật khẩu");
+                    }
+                }
+            } else if (type === 'xa') {
+                const user = document.getElementById('xaUser').value.trim();
+                const pass = document.getElementById('xaPass').value.trim();
+
+                if (user === '1029384021' && pass === '12345@') {
+                    alert("Hệ thống xác thực thành công chuyên viên Phòng Văn hóa - Xã hội. Chuyển hướng đến bảng điều khiển cấp Xã!");
+                    window.location.href = 'xa.html';
+                } else {
+                    alert("Sai mã số hoặc mật khẩu");
+                }
+            }
+        }
+
+        // --- HỆ THỐNG TRỢ LÝ CHATBOT AI CHUYÊN NGHIỆP ---
+        function toggleAiChatWindow() {
+            const win = document.getElementById('aiWindowSystem');
+            win.style.display = (win.style.display === 'flex') ? 'none' : 'flex';
+            if(win.style.display === 'flex') {
+                const container = document.getElementById('aiMessageContainer');
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+
+        function appendSystemMessage(text, className) {
+            const container = document.getElementById('aiMessageContainer');
+            const node = document.createElement('div');
+            node.className = `msg ${className}`;
+            node.innerText = text;
+            container.appendChild(node);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function sendAiMessageSystem() {
+            const input = document.getElementById('aiSystemTextInput');
+            const text = input.value.trim();
+            if(!text) return;
+
+            appendSystemMessage(text, 'user');
+            input.value = "";
+
+            setTimeout(() => {
+                let reply = "Tôi đã ghi nhận văn bản/yêu cầu của bạn. Hệ thống AI đang tiến hành phân tích ngữ nghĩa địa phương...";
+                const lowText = text.toLowerCase();
+                
+                if(lowText.includes('soạn văn bản') || lowText.includes('soạn')) {
+                    reply = "📝 [AI ĐÃ SOẠN THẢO VĂN BẢN HỢP LỆ]:\n\nKính gửi: UBND Xã Bà Nà\nV/v: Báo cáo tiến độ chuẩn hóa dữ liệu dân cư thông minh các thôn.\n\nHiện tại các Tổ công nghệ số cộng đồng đang tích cực bám sát địa bàn hỗ trợ nhân dân rà soát 14 tiêu chí văn hóa - xã hội định kỳ phục vụ chuyển đổi số...";
+                } else if(lowText.includes('dân số') || lowText.includes('dân')) {
+                    reply = "📊 Thống kê nhanh từ nền tảng: Xã Bà Nà gồm 10 thôn trực thuộc với quy mô dân số ước tính đạt khoảng 25.000 người, diện tích tự nhiên 136,41 km².";
+                } else if(lowText.includes('lãnh đạo') || lowText.includes('chủ tịch')) {
+                    reply = "📞 Thông tin lãnh đạo chủ chốt: Đồng chí Lê Minh Tuấn giữ chức vụ Chủ tịch UBND xã Bà Nà (SĐT: 0946000234), Văn phòng đặt tại thôn Thạch Nham Tây.";
+                }
+                appendSystemMessage(reply, 'bot');
+            }, 800);
+        }
+
+        function handleAiFileUpload(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            appendSystemMessage(`[Đã gửi file đính kèm minh chứng]: ${file.name}`, 'user');
+            setTimeout(() => {
+                appendSystemMessage(`🟢 AI đã quét thành công tệp/hình ảnh "${file.name}". Nội dung hoàn toàn khớp với biểu mẫu hồ sơ quy định.`, 'bot');
+            }, 1000);
+        }
+
+        function activateVoiceRecognitionAI() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Trình duyệt hoặc thiết bị hiện tại không hỗ trợ API ghi âm giọng nói trực tiếp.");
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'vi-VN';
+            const micBtn = document.getElementById('aiVoiceMicBtn');
+            
+            recognition.onstart = function() {
+                micBtn.classList.add('active-mic');
+            };
+
+            recognition.onresult = function(event) {
+                const resultText = event.results[0][0].transcript;
+                document.getElementById('aiSystemTextInput').value = resultText;
+            };
+
+            recognition.onerror = function() {
+                micBtn.classList.remove('active-mic');
+            };
+
+            recognition.onend = function() {
+                micBtn.classList.remove('active-mic');
+            };
+
+            recognition.start();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            startSlideshowSystem();
+        });
+    </script>
+</body>
+</html>
